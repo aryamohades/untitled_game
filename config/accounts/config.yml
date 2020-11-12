@@ -1,0 +1,26 @@
+# Server config
+server:
+  port: 8080
+  read_timeout_secs: 10
+  read_header_timeout_secs: 10
+  write_timeout_secs: 20
+  idle_timeout_secs: 30
+  graceful_shutdown_timeout_secs: 30
+
+# Database config
+database:
+  address: "postgres://root:password@postgres/accounts?sslmode=disable"
+  lock: "redis://:password@accounts-lock:6379"
+  max_idle_conns: 3
+  max_open_conns: 12
+  conn_max_lifetime_secs: 0
+
+# Sessions config
+sessions:
+  redis: "redis://:password@redis:6379"
+  session_expiry_mins: 60
+  user_expiry_mins: 180
+
+# Envoy config
+envoy:
+  redis: "redis://:password@redis:6379"

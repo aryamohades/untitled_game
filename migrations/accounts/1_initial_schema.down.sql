@@ -1,0 +1,6 @@
+BEGIN;
+
+DROP TABLE IF EXISTS accounts;
+DROP FUNCTION IF EXISTS trigger_updated_at;
+
+COMMIT;
