@@ -88,6 +88,8 @@ func main() {
 	}()
 
 	// EXAMPLE of using envoy to send request to service and wait for response
+	// This is a contrived example because this service is sending a request to itself,
+	// but it would work the same if the following block were running on a separate server/machine.
 	go func() {
 		for {
 			// Wait 2 seconds between requests
@@ -160,19 +162,13 @@ type exampleService struct {
 }
 
 func (s *exampleService) exampleReceiver(data interface{}, res envoy.Responder) {
-	err := s.env.Receive(proto.RouteGetAccount, func(data interface{}, res envoy.Responder) {
-		s.log.Printf("received data: %v", data)
+	s.log.Printf("received data: %v", data)
 
-		r := envoy.Response{
-			Data:       "pong",
-			ExpirySecs: 5,
-		}
-		if err := res(r); err != nil {
-			s.log.Printf("envoy respond error: %v", err)
-		}
-	})
-
-	if err != nil {
-		s.log.Printf("envoy receiver error (route=%d): %v", proto.RouteGetAccount, err)
+	r := envoy.Response{
+		Data:       "pong",
+		ExpirySecs: 5,
+	}
+	if err := res(r); err != nil {
+		s.log.Printf("envoy respond error: %v", err)
 	}
 }
