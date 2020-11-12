@@ -173,6 +173,6 @@ func (s *exampleService) exampleReceiver(data interface{}, res envoy.Responder) 
 	})
 
 	if err != nil {
-		s.log.Printf("envoy receive error (service route = %d): %v", 1, err)
+		s.log.Printf("envoy receiver error (route=%d): %v", proto.RouteGetAccount, err)
 	}
 }
