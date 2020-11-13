@@ -63,7 +63,7 @@ func (s *service) Logout(sess session.Session) error {
 	return s.sess.Remove(sess)
 }
 
-// Authenticate authenticates account credentials. If successful a new session is returned for the
+// Authenticate authenticates account credentials. If successful, a new session is returned for the
 // authenticated user without adding the session to the session store.
 func (s *service) Authenticate(creds Credentials) (session.Token, error) {
 	account, err := s.accounts.GetByEmail(strings.ToLower(creds.Email))
