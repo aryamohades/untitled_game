@@ -15,10 +15,8 @@ import (
 	"untitled_game/accounts/handler"
 	"untitled_game/accounts/register"
 	"untitled_game/accounts/session"
-	"untitled_game/core/envoy"
 	"untitled_game/core/migrate"
 	"untitled_game/core/postgres"
-	"untitled_game/proto"
 )
 
 func main() {
@@ -71,57 +69,6 @@ func main() {
 		IdleTimeout:       cfg.Server.IdleTimeoutSecs * time.Second,
 	}
 
-	env, err := envoy.New(envoy.Config{
-		Redis:   cfg.Envoy.Redis,
-		Service: proto.ServiceAccounts,
-	})
-	if err != nil {
-		log.Fatalf("could not create envoy: %v", err)
-	}
-
-	// DEMO of inter-service communication using envoy
-	envSvc := exampleService{log, env}
-	go func() {
-		if err := env.Receive(proto.RouteGetAccount, envSvc.exampleReceiver); err != nil {
-			log.Printf("envoy receive error (route=%d): %v", proto.RouteGetAccount, err)
-		}
-	}()
-
-	// EXAMPLE of using envoy to send request to service and wait for response
-	// This is a contrived example because this service is sending a request to itself,
-	// but it would work the same if the following block were running on a separate server/machine.
-	go func() {
-		for {
-			// Wait 2 seconds between requests
-			time.Sleep(2 * time.Second)
-
-			// Send a simple "ping" message
-			r := envoy.Request{
-				Service: proto.ServiceAccounts,
-				Route:   proto.RouteGetAccount,
-				Data:    "ping",
-			}
-
-			// Send the request and save the returned id
-			id, err := env.Send(r)
-			if err != nil {
-				log.Printf("envoy send error: %v", err)
-				continue
-			}
-
-			// Use the unique id of the request to wait for a response with a 5 second timeout
-			res, err := env.Wait(id, 5)
-			if err != nil {
-				log.Printf("envoy wait error: %v", err)
-				continue
-			}
-
-			// Log the response
-			log.Printf("envoy response: %v", res)
-		}
-	}()
-	// END DEMO envoy
-
 	go func() {
 		log.Printf("starting server on port: %d", cfg.Server.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -154,21 +101,4 @@ func main() {
 	}
 
 	log.Println("server shutdown complete, exiting")
-}
-
-type exampleService struct {
-	log *log.Logger
-	env *envoy.Envoy
-}
-
-func (s *exampleService) exampleReceiver(data interface{}, res envoy.Responder) {
-	s.log.Printf("received data: %v", data)
-
-	r := envoy.Response{
-		Data:       "pong",
-		ExpirySecs: 5,
-	}
-	if err := res(r); err != nil {
-		s.log.Printf("envoy respond error: %v", err)
-	}
 }

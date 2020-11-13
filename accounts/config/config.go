@@ -20,7 +20,6 @@ type Server struct {
 // Database represents postgres database configuration options.
 type Database struct {
 	Address             string        `yaml:"address"`
-	Lock                string        `yaml:"lock"`
 	MaxIdleConns        int           `yaml:"max_idle_conns"`
 	MaxOpenConns        int           `yaml:"max_open_conns"`
 	ConnMaxLifetimeSecs time.Duration `yaml:"conn_max_lifetime_secs"`
@@ -33,17 +32,11 @@ type Sessions struct {
 	UserExpiryMins    time.Duration `yaml:"user_expiry_mins"`
 }
 
-// Envoy represents envoy configuration options.
-type Envoy struct {
-	Redis string `yaml:"redis"`
-}
-
 // Config represents the server configuration options.
 type Config struct {
 	Server   Server   `yaml:"server"`
 	Database Database `yaml:"database"`
 	Sessions Sessions `yaml:"sessions"`
-	Envoy    Envoy    `yaml:"envoy"`
 }
 
 // Load attempts to load the app configuration from the file located at the provided path.

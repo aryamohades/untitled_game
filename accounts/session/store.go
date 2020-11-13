@@ -26,8 +26,7 @@ var cmdGetSession = redis.NewScript(1, `
 	return res
 `)
 
-// ErrSessionNotFound is used when attempting to access a session token that does not exist in the
-// session store.
+// ErrSessionNotFound is used when attempting to retrieve a token that does not exist in the store.
 var ErrSessionNotFound = errors.New("session not found")
 
 // Store provides methods for interacting with a session store.

@@ -22,6 +22,7 @@ func New(log *log.Logger, sess session.Store, authService auth.Service, register
 	h.Handle(http.MethodGet, "/session", authHandler.getSession, authMw)
 	h.Handle(http.MethodPost, "/session", authHandler.createSession)
 	h.Handle(http.MethodDelete, "/session", authHandler.deleteSession, authMw)
+	h.Handle(http.MethodPost, "/authenticate", authHandler.authenticate)
 
 	registerHandler := &registerHandler{dec, res, registerService}
 	h.Handle(http.MethodPost, "/register", registerHandler.registerAccount)

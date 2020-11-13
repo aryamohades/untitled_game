@@ -8,7 +8,7 @@ import (
 )
 
 // errAccountExists is sent as an http response when the user attempts to create an account with an
-// email that is already in use.
+// email address that is already in use.
 var errAccountExists = api.Error{Message: "Account already exists", Status: http.StatusConflict}
 
 type registerHandler struct {
@@ -34,9 +34,9 @@ func (h *registerHandler) registerAccount(w http.ResponseWriter, r *http.Request
 	if err := h.s.CreateAccount(account); err != nil {
 		if errors.Is(err, register.ErrAccountExists) {
 			h.res.RespondError(w, errAccountExists)
-		} else {
-			h.res.RespondError(w, err)
+			return
 		}
+		h.res.RespondError(w, err)
 		return
 	}
 	h.res.RespondStatus(w, http.StatusCreated)
